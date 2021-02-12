@@ -1,3 +1,6 @@
+# Useless files/folders
+my_datapack/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

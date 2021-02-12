@@ -1,7 +1,7 @@
 from datapack import Datapack, mcfunction
 
 myDatapack = Datapack(
-    title = 'My Datapack',
+    title = 'My_Datapack',
     author = 'Vianpyro',
     pack_meta = {
         'minecraft_version': '1.16',
