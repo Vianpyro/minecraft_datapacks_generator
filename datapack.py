@@ -1,4 +1,3 @@
-from pack import Pack
 import os
 from shutil import rmtree
 from time import time
@@ -30,7 +29,12 @@ class Datapack:
 
         elif content is not None and not isinstance(content, dict):
             raise TypeError(f'Argument "content" must be of type "dict" not {type(content)}!')
+        
 
+        '''
+        Save the title to lower case because of Minecraft datapack structure requiering lower case characters
+        Save the subfolder without spaces in between words to recall the functions easier
+        '''
         self.title = title.lower()
         self.subfolder_title = self.title.replace(' ', '_')
         self.author = author
@@ -42,7 +46,7 @@ class Datapack:
         try:
             os.mkdir(f'{path}{name}')
         except OSError:
-            print(f'Creation of the directory {name} failed.')
+            print(f'Failed to create the directory {name}.')
         else:
             print(f'Successfuly created the directory {name}.')
     
@@ -59,6 +63,11 @@ class Datapack:
             f.close()
 
     def compile(self):
+        '''
+        Function to translate the Python code into a Minecraft datapack
+        Probably the most important function of this program
+        '''
+        # Removing or not the older datapack with the same name (if it exists)
         if self.exists:
             if not self.replace:
                 raise ValueError('Could not replace previous datapack.')
@@ -70,13 +79,11 @@ class Datapack:
                 else:
                     print(f'Successfuly deleted the directory {self.title}.')
 
+        # Starting the translation into the datapack
         print('Generating the datapack, this might take a few seconds...')
         time_stamp = time()
 
-        # Generate the datapack.
-        if self.exists and not self.replace:
-            raise Warning(f'Could not write {self.title}!')
-        else:
+        if not self.exists or self.replace:
             # Create the datapack directory
             self.make_directory(self.title)
 
@@ -101,29 +108,75 @@ class Datapack:
                 self.make_directory(self.subfolder_title, f'{self.title}/data/')
 
                 for key in self.content:
-                    print(f'Generating {key} files...')
                     directory_name = f'{self.title}/data/{self.subfolder_title}/{key}/'
                     
-                    if key == 'functions':
+                    if key in ['functions', 'predicates'] and self.content[key] is not None:
+                        # Create the key folder
+                        print(f'Generating {key} files...')
                         self.make_directory(directory_name)
+                        
+                        if key == 'functions':
+                            for function_file in self.content[key]:
+                                self.create_file(
+                                    f'{function_file}.mcfunction', directory_name,
+                                    self.content[key][function_file]
+                                )
+                        elif key == 'predicates':
+                            pass
 
-                        for function_file in self.content[key]:
-                            self.create_file(
-                                f'{function_file}.mcfunction', directory_name,
-                                self.content[key][function_file]
-                            )
                         print(f'Successfuly generated {key} files.')
+                    elif self.content[key] is None:
+                        print(f'No file was generated for "{key}".')
                     else:
-                        print(f'{key} files are not supported (yet?).')
-
-
+                        print(f'Failed to create {key} files : {key} is not supported (yet?).')
+                    
         print(f'Successfuly generated the datapack in {time() - time_stamp:0.1} seconds :).')
+
+
+class Pack:
+    def __init__(self, minecraft_version='1.6.1', description=None, author=None):
+        default_pack_format = 7
+        minecraft_version_to_pack_format = {
+            '1.6.1': 1, '1.6.2': 1, '1.6.4': 1,
+            '1.7.2': 1, '1.7.4': 1, '1.7.5': 1, '1.7.6': 1, '1.7.7': 1, '1.7.8': 1, '1.7.9': 1, '1.7.10': 1,
+            '1.8': 1, '1.8.1': 1, '1.8.2': 1, '1.8.3': 1, '1.8.4': 1, '1.8.5': 1, '1.8.6': 1, '1.8.7': 1, '1.8.8': 1, '1.8.9': 1,
+            '1.9': 2, '1.9.1': 2, '1.9.2': 2, '1.9.3': 2, '1.9.4': 2,
+            '1.10': 2, '1.10.1': 2, '1.10.2': 2,
+            '1.11': 3, '1.11.1': 3, '1.11.2': 3,
+            '1.12': 3, '1.12.1': 3, '1.12.2': 3,
+            '1.13': 4, '1.13.1': 4, '1.13.2': 4,
+            '1.14': 4, '1.14.1': 4, '1.14.2': 4, '1.14.3': 4, '1.14.4': 4,
+            '1.15': 5, '1.15.1': 5, '1.15.2': 5,
+            '1.16': 5, '1.16.1': 5,
+            '1.16.2': 6, '1.16.3': 6, '1.16.4': 6, '1.16.5': 6,
+            '1.17': 7, '1.17+': 7
+        }
+
+        if minecraft_version in minecraft_version_to_pack_format:
+            self.pack_format = minecraft_version_to_pack_format[minecraft_version]
+        else:
+            print(
+                f'This version of Minecraft seems to have no pack format defined:\nset to {default_pack_format} by default.')
+
+        self.description = description
+        self.author = author
+
+    def __str__(self):
+        return str(
+            {
+                "pack": {
+                    "author": self.author,
+                    "description": self.description,
+                    "pack_format": self.pack_format
+                }
+            }
+        ).replace("'", '"')
 
 
 def mcfunction(directory):
     try:
-        with open(directory, 'r') as f:
-            r = [line.replace('\n', '') for line in f]
+        with open(f'{directory}.mcfunction', 'r') as f:
+            r = [line.replace('\n', '') for line in f if line not in ['', ' ', '\n']]
             f.close()
         return r
     except:

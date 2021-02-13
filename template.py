@@ -13,8 +13,9 @@ myDatapack = Datapack(
                 'say test ok',
                 'say test ko'
             ],
-            'test2': mcfunction('test.mcfunction')
-        }
+            'test2': mcfunction('test')
+        },
+        'predicates': None
     },
 )
 
