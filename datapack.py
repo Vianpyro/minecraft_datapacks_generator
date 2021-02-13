@@ -3,7 +3,7 @@ from shutil import rmtree
 from time import time
 
 class Datapack:
-    def __init__(self, title, author="Vianpyro's datapack generator", pack_meta=None, content=None):
+    def __init__(self, title, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
         """
         title: The title of the datapack.
         author: The author of the datapack.
@@ -12,9 +12,9 @@ class Datapack:
         """
         # Is this datapack new?
         self.exists = os.path.exists(title)
-        self.replace = False
+        self.replace = auto_replace
 
-        if self.exists:
+        if self.exists and not auto_replace:
             self.replace = input(f'{title} already exists, do you want to replace it? [yes/no]: ')[0].lower() == 'y'
 
         # Check if datapack format is correct.
@@ -40,6 +40,9 @@ class Datapack:
         self.author = author
         self.pack_meta = pack_meta
         self.content = content
+
+        if auto_compile:
+            self.compile()
     
     def make_directory(self, name, path=''):
         # Create a directory.
@@ -58,6 +61,9 @@ class Datapack:
             elif isinstance(content, list):
                 for line in content:
                     f.write(f'{line}\n')
+            elif isinstance(content, dict):
+                for line in str(content).replace("'", '"').lower():
+                    f.write(f'{line}')
             else:
                 raise TypeError(f'Argument "content" must be of type "str" or "list" not {type(content)}!')
             f.close()
@@ -122,14 +128,34 @@ class Datapack:
                                     self.content[key][function_file]
                                 )
                         elif key == 'predicates':
-                            pass
+                            for predicate_file in self.content[key]:
+                                self.create_file(
+                                    f'{predicate_file}.json', directory_name,
+                                    self.content[key][predicate_file]
+                                )
 
                         print(f'Successfuly generated {key} files.')
                     elif self.content[key] is None:
                         print(f'No file was generated for "{key}".')
                     else:
                         print(f'Failed to create {key} files : {key} is not supported (yet?).')
-                    
+                
+                # Create the main(tick) and load files
+                self.make_directory('minecraft', f'{self.title}/data/')
+                self.make_directory('tags', f'{self.title}/data/minecraft/')
+                self.make_directory('functions', f'{self.title}/data/minecraft/tags/')
+                
+                if os.path.exists(f'{self.title}/data/{self.subfolder_title}/functions/load.mcfunction'):
+                    self.create_file(
+                        'load.json', f'{self.title}/data/minecraft/tags/functions/',
+                        f'{{"values": ["{self.subfolder_title}:load"]}}'
+                    )
+                if os.path.exists(f'{self.title}/data/{self.subfolder_title}/functions/main.mcfunction'):
+                    self.create_file(
+                        'tick.json', f'{self.title}/data/minecraft/tags/functions/',
+                        f'{{"values": ["{self.subfolder_title}:main"]}}'
+                    )
+
         print(f'Successfuly generated the datapack in {time() - time_stamp:0.1} seconds :).')
 
 
@@ -155,8 +181,7 @@ class Pack:
         if minecraft_version in minecraft_version_to_pack_format:
             self.pack_format = minecraft_version_to_pack_format[minecraft_version]
         else:
-            print(
-                f'This version of Minecraft seems to have no pack format defined:\nset to {default_pack_format} by default.')
+            raise Warning(f'This version of Minecraft seems to have no pack format defined:\nSet to {default_pack_format} by default.')
 
         self.description = description
         self.author = author
@@ -173,14 +198,14 @@ class Pack:
         ).replace("'", '"')
 
 
-def mcfunction(directory):
+def import_from_file(path, extension='mcfunction'):
     try:
-        with open(f'{directory}.mcfunction', 'r') as f:
+        with open(f'{path}.{extension}', 'r') as f:
             r = [line.replace('\n', '') for line in f if line not in ['', ' ', '\n']]
             f.close()
         return r
     except:
-        raise ValueError(f'Could not read the file {directory}')
+        raise ValueError(f'Could not read the file {path}.{extension}')
 
 
 assert Datapack('TeSt tItLe').title == 'test title'
