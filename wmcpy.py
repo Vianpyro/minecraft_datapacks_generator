@@ -2,8 +2,9 @@ import os
 from shutil import rmtree
 from time import time
 
+
 class Datapack:
-    def __init__(self, title, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
+    def __init__(self, title, path=None, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
         """
         Initialisation of the Datapack.
         A datapack is a Minecraft folder in which a server administrator puts commands and rules
@@ -59,12 +60,19 @@ class Datapack:
         try:
             os.mkdir(f'{path}{name}')
         except OSError:
-            print(f'Failed to create the directory {name}.')
+            raise OSError(f'Failed to create the directory "{name}".')
         else:
-            print(f'Successfuly created the directory {name}.')
+            print(f'Successfuly created the directory "{name}".')
     
     def create_file(self, name, path='', content=''):
-        # Create a file.
+        '''
+        This functions creates a file
+
+        :param name:    The name of the file to create.
+        :param path:    The path where the file has to be created.
+        :param content: The content to write in the created file.
+        :return:        None or OS-Error if the file could not be created.
+        '''
         with open(f'{path}{name}', 'w') as f:
             if isinstance(content, str):
                 f.write(content)
@@ -76,6 +84,7 @@ class Datapack:
                     f.write(f'{line}')
             else:
                 raise TypeError(f'Argument "content" must be of type "str" or "list" not {type(content)}!')
+            print(f'Successfuly created the file "{name}".')
             f.close()
 
     def compile(self):
@@ -93,9 +102,9 @@ class Datapack:
                 try:
                     rmtree(self.title)
                 except:
-                    print(f'Failed to delete the directory {self.title}.')
+                    print(f'Failed to delete the directory "{self.title}".')
                 else:
-                    print(f'Successfuly deleted the directory {self.title}.')
+                    print(f'Successfuly deleted the directory "{self.title}".')
 
         # Starting the translation into the datapack
         print('Generating the datapack, this might take a few seconds...')
@@ -128,7 +137,10 @@ class Datapack:
                 for key in self.content:
                     directory_name = f'{self.title}/data/{self.subfolder_title}/{key}/'
                     
-                    if key in ['functions', 'predicates'] and self.content[key] is not None:
+                    if key in [
+                        'advancements', 'dimension_type', 'dimension', 'item_modifiers‌'
+                        'loot_tables', 'functions', 'predicates', 'recipes'
+                    ] and self.content[key] is not None:
                         # Create the key folder
                         print(f'Generating {key} files...')
                         self.make_directory(directory_name)
@@ -139,11 +151,12 @@ class Datapack:
                                     f'{function_file}.mcfunction', directory_name,
                                     self.content[key][function_file]
                                 )
-                        elif key == 'predicates':
-                            for predicate_file in self.content[key]:
+                        else:
+                            print('Be careful, this kind of file is not verified by this program and may contain some errors:', key)
+                            for json_file in self.content[key]:
                                 self.create_file(
-                                    f'{predicate_file}.json', directory_name,
-                                    self.content[key][predicate_file]
+                                    f'{json_file}.json', directory_name,
+                                    self.content[key][json_file]
                                 )
 
                         print(f'Successfuly generated {key} files.')

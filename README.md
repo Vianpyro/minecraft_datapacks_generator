@@ -12,7 +12,7 @@
 
 ### Example (`template.py`):
 ```python
-from datapack import Datapack, import_from_file
+from wmcpy import Datapack, import_from_file
 
 my_datapack_title = 'My_Datapack'
 
@@ -24,6 +24,35 @@ myDatapack = Datapack(
         'description': 'Have fun using my first datapack!'
     },
     content = {
+        'advancements': {
+            'root': {
+                "display": {
+                    "title": {
+                        "text": "God",
+                        "color": "red",
+                        "bold": True,
+                    },
+                    "description": {
+                        "text": "Vianpyro!",
+                        "color": "white",
+                        "italic": True
+                    },
+                    "icon": {
+                        "item": "minecraft:grass_block"
+                    },
+                    "frame": "goal",
+                    "show_toast": True,
+                    "announce_to_chat": True,
+                    "hidden": False,
+                    "background": "minecraft:textures/gui/advancements/backgrounds/dirt.png"
+                },
+                "criteria": {
+                    "c1": {
+                        "trigger": "minecraft:slept_in_bed"
+                    }
+                }
+            }
+        },
         'functions': {
             'main': [
                 'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}'
@@ -57,7 +86,7 @@ myDatapack.content['functions']['test3'] = 'execute at @s run summon pig'
 
 myDatapack.compile()
 ```
-* In this example, I start by importing the datapack "library", this line is ***required*** for the datapack to be generated!!
+* In this example, I start by importing the wmcpy "library", this line is ***required*** for the datapack to be generated!!
 * I also create a variable containing the name of my datapack because I want to be able to change it in every file I mention it.
 * Then I create another variable containing an instance of the class "Datapack" to start the creation of my datapack.
 * The title is the name of the datapack I'll paste in the *datapacks* folder of my [Minecraft](https://www.minecraft.net/download) world.

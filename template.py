@@ -1,4 +1,4 @@
-from datapack import Datapack, import_from_file
+from wmcpy import Datapack, import_from_file
 
 my_datapack_title = 'My_Datapack'
 
@@ -10,6 +10,35 @@ myDatapack = Datapack(
         'description': 'Have fun using my first datapack!'
     },
     content = {
+        'advancements': {
+            'root': {
+                "display": {
+                    "title": {
+                        "text": "God",
+                        "color": "red",
+                        "bold": True,
+                    },
+                    "description": {
+                        "text": "Vianpyro!",
+                        "color": "white",
+                        "italic": True
+                    },
+                    "icon": {
+                        "item": "minecraft:grass_block"
+                    },
+                    "frame": "goal",
+                    "show_toast": True,
+                    "announce_to_chat": True,
+                    "hidden": False,
+                    "background": "minecraft:textures/gui/advancements/backgrounds/dirt.png"
+                },
+                "criteria": {
+                    "c1": {
+                        "trigger": "minecraft:slept_in_bed"
+                    }
+                }
+            }
+        },
         'functions': {
             'main': [
                 'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}'
