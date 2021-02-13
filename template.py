@@ -21,7 +21,7 @@ myDatapack = Datapack(
                 'say test ok',
                 'say test ko'
             ],
-            'test2': import_from_file('test')
+            'test2': import_from_file('resources/functions/silvathor_random')
         },
         'predicates': {
             'my_predict': {
