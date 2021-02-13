@@ -54,7 +54,7 @@ class Datapack:
 
         :param name:    The name of the directory to create.
         :param path:    The path where the directory has to be created.
-        :return:        None or OS-Error
+        :return:        None or OS-Error if the directory could not be created.
         '''
         try:
             os.mkdir(f'{path}{name}')
