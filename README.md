@@ -10,7 +10,7 @@
 * Type `/reload` to load the datapack.
 * Have fun playing with your brand new handmade datapack!
 
-### Example (`template.py`):
+### Example:
 ```python
 from wmcpy import Datapack, import_from_file
 
