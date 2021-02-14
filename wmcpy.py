@@ -2,8 +2,6 @@ import os
 from shutil import rmtree
 from time import time
 
-print(os.path.exists('C:\\Users\\viann\\AppData\\Roaming\\.minecraft\\saves\\MCPY\\datapacks\\my_datapack'))
-
 
 class Datapack:
     def __init__(self, title, path=None, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
@@ -23,12 +21,7 @@ class Datapack:
         self.title = title.lower()
 
         # Checking if the path given is valid.
-        if path is None:
-            self.path = ''
-        else:
-            print(path[-1] == os.path.sep)
-            self.path = path + os.path.sep
-        print(self.path)
+        self.path = '' if path is None else path + os.path.sep
 
         # Is this datapack new?
         self.exists = os.path.exists(self.path + self.title)
