@@ -2,6 +2,8 @@ import os
 from shutil import rmtree
 from time import time
 
+print(os.path.exists('C:\\Users\\viann\\AppData\\Roaming\\.minecraft\\saves\\MCPY\\datapacks\\my_datapack'))
+
 
 class Datapack:
     def __init__(self, title, path=None, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
@@ -10,18 +12,31 @@ class Datapack:
         A datapack is a Minecraft folder in which a server administrator puts commands and rules
             to change the behavior of the game as much as desired.
 
+        :param path:        The title where the datapack should be generated.
         :param title:       The title of the datapack.
         :param author:      The author of the datapack.
         :param pack_meta:   The content of the "pack.mcmeta".
         :param content:     The code the user writes in their datapack.
         :return:            None
         """
+        # Set the title to lower case
+        self.title = title.lower()
+
+        # Checking if the path given is valid.
+        if path is None:
+            self.path = ''
+        else:
+            print(path[-1] == os.path.sep)
+            self.path = path + os.path.sep
+        print(self.path)
+
         # Is this datapack new?
-        self.exists = os.path.exists(title)
+        self.exists = os.path.exists(self.path + self.title)
         self.replace = auto_replace
 
         if self.exists and not auto_replace:
             self.replace = input(f'{title} already exists, do you want to replace it? [yes/no]: ')[0].lower() == 'y'
+
 
         # Check if datapack format is correct.
         if not isinstance(title, str):
@@ -40,7 +55,6 @@ class Datapack:
         Save the title to lower case because of Minecraft datapack structure requiering lower case characters.
         Save the subfolder without spaces in between words to recall the functions easier.
         '''
-        self.title = title.lower()
         self.subfolder_title = self.title.replace(' ', '_')
         self.author = author
         self.pack_meta = pack_meta
@@ -48,44 +62,6 @@ class Datapack:
 
         if auto_compile:
             self.compile()
-    
-    def make_directory(self, name, path=''):
-        '''
-        This functions creates a directory
-
-        :param name:    The name of the directory to create.
-        :param path:    The path where the directory has to be created.
-        :return:        None or OS-Error if the directory could not be created.
-        '''
-        try:
-            os.mkdir(f'{path}{name}')
-        except OSError:
-            raise OSError(f'Failed to create the directory "{name}".')
-        else:
-            print(f'Successfuly created the directory "{name}".')
-    
-    def create_file(self, name, path='', content=''):
-        '''
-        This functions creates a file
-
-        :param name:    The name of the file to create.
-        :param path:    The path where the file has to be created.
-        :param content: The content to write in the created file.
-        :return:        None or OS-Error if the file could not be created.
-        '''
-        with open(f'{path}{name}', 'w') as f:
-            if isinstance(content, str):
-                f.write(content)
-            elif isinstance(content, list):
-                for line in content:
-                    f.write(f'{line}\n')
-            elif isinstance(content, dict):
-                for line in str(content).replace("'", '"').lower():
-                    f.write(f'{line}')
-            else:
-                raise TypeError(f'Argument "content" must be of type "str" or "list" not {type(content)}!')
-            print(f'Successfuly created the file "{name}".')
-            f.close()
 
     def compile(self):
         '''
@@ -100,7 +76,7 @@ class Datapack:
                 raise ValueError('Could not replace previous datapack.')
             else:
                 try:
-                    rmtree(self.title)
+                    rmtree(self.path + self.title)
                 except:
                     print(f'Failed to delete the directory "{self.title}".')
                 else:
@@ -112,14 +88,14 @@ class Datapack:
 
         if not self.exists or self.replace:
             # Create the datapack directory
-            self.make_directory(self.title)
+            make_directory(self.title, self.path)
 
             # Create the "pack.mcmeta" file
             if self.pack_meta == None:
                 print('No "pack.mcmeta" was generated!')
             else:
-                self.create_file(
-                    'pack.mcmeta', f'{self.title}/',
+                create_file(
+                    'pack.mcmeta', f'{self.path}{self.title}/',
                     str(create_pack_meta(
                         self.pack_meta['minecraft_version'],
                         self.pack_meta['description'],
@@ -131,11 +107,11 @@ class Datapack:
                 print('No content was generated!')
             else:
                 # Create the data directory containing every modification brung by the datapack
-                self.make_directory('data', f'{self.title}/')
-                self.make_directory(self.subfolder_title, f'{self.title}/data/')
+                make_directory('data', f'{self.path}{self.title}/')
+                make_directory(self.subfolder_title, f'{self.path}{self.title}/data/')
 
                 for key in self.content:
-                    directory_name = f'{self.title}/data/{self.subfolder_title}/{key}/'
+                    directory_name = f'{self.path}{self.title}/data/{self.subfolder_title}/{key}/'
                     
                     if key in [
                         'advancements', 'dimension_type', 'dimension', 'item_modifiers‌'
@@ -143,18 +119,18 @@ class Datapack:
                     ] and self.content[key] is not None:
                         # Create the key folder
                         print(f'Generating {key} files...')
-                        self.make_directory(directory_name)
+                        make_directory(directory_name)
                         
                         if key == 'functions':
                             for function_file in self.content[key]:
-                                self.create_file(
+                                create_file(
                                     f'{function_file}.mcfunction', directory_name,
                                     self.content[key][function_file]
                                 )
                         else:
                             print('Be careful, this kind of file is not verified by this program and may contain some errors:', key)
                             for json_file in self.content[key]:
-                                self.create_file(
+                                create_file(
                                     f'{json_file}.json', directory_name,
                                     self.content[key][json_file]
                                 )
@@ -166,23 +142,60 @@ class Datapack:
                         print(f'Failed to create {key} files : {key} is not supported (yet?).')
                 
                 # Create the main(tick) and load files
-                self.make_directory('minecraft', f'{self.title}/data/')
-                self.make_directory('tags', f'{self.title}/data/minecraft/')
-                self.make_directory('functions', f'{self.title}/data/minecraft/tags/')
+                make_directory('minecraft', f'{self.path}{self.title}/data/')
+                make_directory('tags', f'{self.path}{self.title}/data/minecraft/')
+                make_directory('functions', f'{self.path}{self.title}/data/minecraft/tags/')
                 
-                if os.path.exists(f'{self.title}/data/{self.subfolder_title}/functions/load.mcfunction'):
-                    self.create_file(
-                        'load.json', f'{self.title}/data/minecraft/tags/functions/',
+                if os.path.exists(f'{self.path}{self.title}/data/{self.subfolder_title}/functions/load.mcfunction'):
+                    create_file(
+                        'load.json', f'{self.path}{self.title}/data/minecraft/tags/functions/',
                         f'{{"values": ["{self.subfolder_title}:load"]}}'
                     )
-                if os.path.exists(f'{self.title}/data/{self.subfolder_title}/functions/main.mcfunction'):
-                    self.create_file(
-                        'tick.json', f'{self.title}/data/minecraft/tags/functions/',
+                if os.path.exists(f'{self.path}{self.title}/data/{self.subfolder_title}/functions/main.mcfunction'):
+                    create_file(
+                        'tick.json', f'{self.path}{self.title}/data/minecraft/tags/functions/',
                         f'{{"values": ["{self.subfolder_title}:main"]}}'
                     )
 
         print(f'Successfuly generated the datapack in {time() - time_stamp:0.1} seconds :).')
 
+def make_directory(name, path=''):
+    '''
+    This functions creates a directory
+
+    :param name:    The name of the directory to create.
+    :param path:    The path where the directory has to be created.
+    :return:        None or OS-Error if the directory could not be created.
+    '''
+    try:
+        os.mkdir(f'{path}{name}')
+    except OSError:
+        raise OSError(f'Failed to create the directory "{name}".')
+    else:
+        print(f'Successfuly created the directory "{name}".')
+
+def create_file(name, path='', content=''):
+    '''
+    This functions creates a file
+
+    :param name:    The name of the file to create.
+    :param path:    The path where the file has to be created.
+    :param content: The content to write in the created file.
+    :return:        None or OS-Error if the file could not be created.
+    '''
+    with open(f'{path}{name}', 'w') as f:
+        if isinstance(content, str):
+            f.write(content)
+        elif isinstance(content, list):
+            for line in content:
+                f.write(f'{line}\n')
+        elif isinstance(content, dict):
+            for line in str(content).replace("'", '"').lower():
+                f.write(f'{line}')
+        else:
+            raise TypeError(f'Argument "content" must be of type "str" or "list" not {type(content)}!')
+        print(f'Successfuly created the file "{name}".')
+        f.close()
 
 def create_pack_meta(minecraft_version='1.6.1', description=None, author=None):
     '''
