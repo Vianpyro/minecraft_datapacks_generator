@@ -21,7 +21,12 @@ class Datapack:
         self.title = title.lower()
 
         # Checking if the path given is valid.
-        self.path = '' if path is None else path + os.path.sep
+        if path is None:
+            self.path = ''
+        elif path[-1] == os.path.sep:
+            self.path = path
+        else:
+            self.path = path + os.path.sep
 
         # Is this datapack new?
         self.exists = os.path.exists(self.path + self.title)

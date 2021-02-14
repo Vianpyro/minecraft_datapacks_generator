@@ -18,6 +18,7 @@ my_datapack_title = 'My_Datapack'
 
 myDatapack = Datapack(
     title = my_datapack_title,
+    path='~\\home\\Vianpyro\\.minecraft\\saves\\world_42\\datapacks',
     author = 'Vianpyro',
     pack_meta = {
         'minecraft_version': '1.16.4',
