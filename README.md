@@ -62,7 +62,7 @@ myDatapack = Datapack(
                 function_name='raycast',
                 distance=50,
                 step=0.5,
-                end_condition='execute if block ~ ~ ~ stone',
+                goal='execute if block ~ ~ ~ stone',
                 output="say Stoned",
                 display_particle='flame'
             ),
