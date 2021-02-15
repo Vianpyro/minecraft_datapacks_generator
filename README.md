@@ -56,15 +56,7 @@ myDatapack = Datapack(
             }
         },
         'functions': {
-            'main': [
-                'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}',
-                'scoreboard objectives add vianpyro_RAYCAST minecraft.used:minecraft.carrot_on_a_stick',
-                f'execute as @a if score @s vianpyro_RAYCAST matches 1 at @s run function {subfolder_title}:raycast',
-                'scoreboard players set @a[scores={vianpyro_RAYCAST=1}] vianpyro_RAYCAST 0'
-            ],
-            'load': [
-                f'tellraw @a ["", {{"text": "{my_datapack_title} > Successfuly reloaded the datapack!", "color": "green"}}]'
-            ],
+            'load': f'tellraw @a ["", {{"text": "{my_datapack_title} > Successfuly reloaded the datapack!", "color": "green"}}]',
             'raycast': Raycast(
                 datapack_name=subfolder_title,
                 function_name='raycast',
@@ -96,7 +88,12 @@ myDatapack = Datapack(
     auto_replace=True
 )
 
-myDatapack.content['functions']['test3'] = 'execute at @s run summon pig'
+'main': [
+    'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}',
+    'scoreboard objectives add vianpyro_RAYCAST minecraft.used:minecraft.carrot_on_a_stick',
+    f'execute as @a if score @s vianpyro_RAYCAST matches 1 at @s run function {subfolder_title}:raycast',
+    'scoreboard players set @a[scores={vianpyro_RAYCAST=1}] vianpyro_RAYCAST 0'
+]
 
 myDatapack.compile()
 ```
