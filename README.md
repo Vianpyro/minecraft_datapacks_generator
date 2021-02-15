@@ -90,7 +90,7 @@ myDatapack = Datapack(
 
 myDatapack.content['functions']['main'] = [
     'scoreboard objectives add vianpyro_RAYCAST minecraft.used:minecraft.carrot_on_a_stick',
-    f'execute as @a if score @s vianpyro_RAYCAST matches 1 at @s run function {subfolder_title}:raycast',
+    f'execute as @a if score @s vianpyro_RAYCAST matches 1 at @s anchored eyes run function {subfolder_title}:raycast',
     'scoreboard players set @a[scores={vianpyro_RAYCAST=1}] vianpyro_RAYCAST 0'
 ]
 
