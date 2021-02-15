@@ -1,5 +1,5 @@
-from .datapack import Datapack
-from .files import *
-from .utils import Raycast
+from .wmcpy.datapack import *
+from .wmcpy.files import *
+from .wmcpy.utils import *
 VERSION = "0.0.1"
 AUTHOR = "Vianpyro"
