@@ -195,6 +195,14 @@ def create_file(name, path='', content=''):
         print(f'Successfuly created the file "{name}".')
         f.close()
 
+
+def Raycast(datapack_name, function_name, distance=20, step=0.3, end_condition=None, output=None, display_particle=None):
+    return [
+        f'particle {display_particle} ~ ~ ~ 0 0 0 0 1 normal @a' if display_particle is not None else None,
+        f'{end_condition} run {output}' if end_condition is not None else None,
+        f'execute if entity @s[distance=..{distance}] positioned ^ ^ ^{step} run function {datapack_name}:{function_name}'
+    ]
+
 def create_pack_meta(minecraft_version='1.6.1', description=None, author=None):
     '''
     This function helps with creating the string of a "pack.mcmeta" file ready to be written.

@@ -15,6 +15,7 @@
 from wmcpy import Datapack, import_from_file
 
 my_datapack_title = 'My_Datapack'
+subfolder_title = Datapack(my_datapack_title).subfolder_title
 
 myDatapack = Datapack(
     title = my_datapack_title,
@@ -56,11 +57,23 @@ myDatapack = Datapack(
         },
         'functions': {
             'main': [
-                'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}'
+                'title Vianpyro actionbar {"text":"YAY", "color":"dark_red"}',
+                'scoreboard objectives add vianpyro_RAYCAST minecraft.used:minecraft.carrot_on_a_stick',
+                f'execute as @a if score @s vianpyro_RAYCAST matches 1 at @s run function {subfolder_title}:raycast',
+                'scoreboard players set @a[scores={vianpyro_RAYCAST=1}] vianpyro_RAYCAST 0'
             ],
             'load': [
                 f'tellraw @a ["", {{"text": "{my_datapack_title} > Successfuly reloaded the datapack!", "color": "green"}}]'
             ],
+            'raycast': Raycast(
+                datapack_name=subfolder_title,
+                function_name='raycast',
+                distance=50,
+                step=0.5,
+                end_condition='execute if block ~ ~ ~ stone',
+                output="say Stoned",
+                display_particle='flame'
+            ),
             'test': [
                 'say test ok',
                 'say test ko'
@@ -94,7 +107,7 @@ myDatapack.compile()
 * The author is me, [Vianpyro](https://github.com/Vianpyro).
 * The pack_meta is the informations I'll set in the *pack.mcmeta* file, this file is very important; it allows [Minecraft](https://www.minecraft.net/download) to read your datapack.
 * As you can see I use 2 *reserved* names: ***main*** - containing the functions I want to repeat every [Minecraft](https://www.minecraft.net/download) tick - and ***load*** - once when the datapack is reloaded.
-* Then I write whatever I want to be in my datapack ; 2 functions and a predicate.
+* Then I write whatever I want to be in my datapack ; one advancement, 5 functions and a predicate.
 * I know that the new version of my datapack is better than the older so I want to replace it without being asked when I run the program.
 * I also add another function after the initialisation of my datapack because I want to be able to change it whenever I want without having to search for it in the big block of code above.
 * Once I'm sure I don't have anything to add to my datapack I compile it.
