@@ -6,7 +6,7 @@
 * Create a new empty [Python](https://www.python.org/downloads/) file.
 * Import the library in your new [Python](https://www.python.org/downloads/) file like this :
 ```py
-from Minecraft_Datapacks_Generator import *
+from minecraft_datapacks_generator import *
 ```
 * Create and compile your own datapack.
 * Once the datapack is generated, paste it in the *datapacks* folder of your [Minecraft](https://www.minecraft.net/download) world.
@@ -15,7 +15,7 @@ from Minecraft_Datapacks_Generator import *
 
 ### Example:
 ```python
-from wmcpy import Datapack, import_from_file
+from minecraft_datapacks_generator import *
 
 my_datapack_title = 'My_Datapack'
 subfolder_title = Datapack(my_datapack_title).subfolder_title
