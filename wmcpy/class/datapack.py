@@ -1,28 +1,7 @@
-##################################
-#                                #
-#     code by theskyblockman     #
-#                                #
-##################################
 from os import mkdir
 from shutil import rmtree
+from .workspace import Workspace
 
-class File():
-    def __init__(self, name):
-        self.name = name
-        self.commands = None
-    def set_content(self, commands: list):
-        self.commands = commands
-
-
-
-class Workspace():
-    def __init__(self, name: str) -> None:
-        if name.endswith('.mcfunction'): name.replace('.mcfunction', '', 1)
-        self.name = name
-        self.files = None
-    def add_file(self, file: File):
-        if self.files == None: self.files = []
-        self.files.append(file)
 class Datapack():
     def __init__(self, name, description, version):
         self.name = name
