@@ -7,6 +7,7 @@ from zipfile import ZipFile
 
 # Save the name of the directory and the path to it into variables
 directory = 'minecraft_datapacks_generator'
+repo_owner = 'Vianpyro'
 folder = f'C:\\Users\\{os.getlogin()}\\AppData\\Local\\Programs\\Python\\Python39\\Lib' if os.name == 'nt' else '/usr/lib/python3.9'
 exist = os.path.exists(f'{folder}\\{directory}') and os.path.isdir(f'{folder}\\{directory}')
 
@@ -30,42 +31,52 @@ else:
             for HDD in HDDs:
                 if not found:
                     for path, dirs, files in os.walk(HDD):
-                        if folder + '\\' + directory in path:
+                        if folder + os.path.sep + directory in path:
                             found = True
                             print(f'Found at: {path} in {time() - time0:0.1} seconds.')
                             break
         except OSError as e:
             print(e)
         else:
-            print(f'Paste the "minecraft_datapack_generator" folder in here: {folder}\\{directory}.')
+            if not found:
+                print(f'Unable to locate "{directory}".')
+            print(f'Paste the "{directory}" folder in here: {folder}\\{directory}.')
 
 # Download the latest version
 try:
-    resp = dlurl.urlopen(f'https://api.github.com/repos/Vianpyro/{directory}/releases')
+    resp = dlurl.urlopen(f'https://api.github.com/repos/{repo_owner}/{directory}/releases')
     data = loads(resp.read())[0]
     version = data['tag_name']
 
     if ask_user(f'Would you like to download the latest version ({version})'):
         try:
             print(f'Downloading {directory} {version}...')
-            dlurl.urlretrieve(f'https://github.com/Vianpyro/{directory}/archive/{version}.zip', f'{directory}.zip')
+            dlurl.urlretrieve(f'https://github.com/{repo_owner}/{directory}/archive/{version}.zip', f'{directory}.zip')
             print(f'Successfully downloaded {directory} {version}.')
 
             print(f'Unziping {directory} {version}...')
             with ZipFile(f'{directory}.zip', 'r') as zipf:
-                zipf.extractall(f'{folder}')
+                try:
+                    zipf.extractall(f'{folder}')
+                except:
+                    zipf.extractall()
                 zipf.close()
                 os.remove(f'{directory}.zip')
                 if exist:
                     print(
                         f'Successfully extracted {directory} {version} in "{folder}".',
-                        f'\nYou now have to delete the old version of the library and rename the most recent one "{directory}".'
+                        '\nYou now have to delete the old version of the library'
+                        f'and rename the most recent one "{directory}".'
                     )
                 else:
                     os.rename(f'{folder}\\{directory}-{version}', f'{folder}\\{directory}')
                     print(f'Successfully extracted and installed {directory} {version} in "{folder}".')
         except:
-            print(f'Unable to download and/or extract "https://github.com/Vianpyro/{directory}/archive/{version}.zip"')
+            print(
+                'Unable to download or extract',
+                f'"https://github.com/{repo_owner}/{directory}/archive/{version}.zip"',
+                f'into {folder}\\{directory}.'
+            )
 except:
     print('Unable to resolve host name.')
 
