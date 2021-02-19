@@ -1,6 +1,7 @@
 from os import mkdir
 from shutil import rmtree
 from .workspace import Workspace
+from .raycast import Raycast
 from json import dump
 
 class Datapack():
@@ -9,8 +10,12 @@ class Datapack():
         self.description = description
         self.version = version
         self.workspaces = []
+        self.raycasts = None
     def add_workspace(self, workspace: Workspace):
         self.workspaces.append(workspace)
+    def add_raycast(self, raycast: Raycast):
+        if self.raycasts == None: self.raycasts = []
+        self.raycasts.append(raycast)
     def build(self, path: str, force=False):
         try:
             mkdir(path + '/' + self.name)
@@ -32,20 +37,20 @@ class Datapack():
                         for command in file.commands:
                             commands += str(command) + '\n'
                         open(path + '/' + self.name + '/data/' + workspace.name + '/functions/' + file.name + '.mcfunction', 'w+', encoding='utf-8').write(commands)
-            if workspace.raycasts != None:
-                todo = ['/raycast', '/raycast/tags', '/raycast/tags/blocks', '/raycast/functions', '/raycast/functions/generated_raycast']
-                for f in todo:
-                    try:
-                        mkdir(path + '/' + self.name + '/data' + f)
-                    except:
-                        pass
+        if self.raycasts != None:
+            todo = ['/raycast', '/raycast/tags', '/raycast/tags/blocks', '/raycast/functions', '/raycast/functions/generated_raycast']
+            for f in todo:
                 try:
-                    open(path + '/' + self.name + '/data/raycast/functions/load.mcfunction', 'w+').write('scoreboard objectives add ray_found dummy')
-                except: pass
-                for raycast_id in range(len(workspace.raycasts)):
-                    raycast = workspace.raycasts[raycast_id]
-                    try:
-                        dump({"replace": False,"values": raycast.blocks}, open(path + '/' + self.name + '/data/raycast/tags/blocks/tohit_{}.json'.format(raycast_id), 'w+'))
-                    except:
-                        break
-                    open(path + '/' + self.name + '/data/raycast/functions/generated_raycast/raycast_{}.mcfunction'.format(raycast_id), 'w+').write('execute store result score raycast_{0} ray_found run clone ~-15 ~-4 ~-15 ~15 ~15 ~15 ~-15 ~-4 ~-15 filtered air force'.format(raycast_id))
+                    mkdir(path + '/' + self.name + '/data' + f)
+                except:
+                    pass
+            try:
+                open(path + '/' + self.name + '/data/raycast/functions/load.mcfunction', 'w+').write('scoreboard objectives add ray_found dummy')
+            except: pass
+            for raycast_id in range(len(self.raycasts)):
+                raycast = self.raycasts[raycast_id]
+                try:
+                    dump({"replace": False,"values": raycast.blocks}, open(path + '/' + self.name + '/data/raycast/tags/blocks/tohit_{}.json'.format(raycast_id), 'w+'))
+                except:
+                    break
+                open(path + '/' + self.name + '/data/raycast/functions/generated_raycast/raycast_{}.mcfunction'.format(raycast_id), 'w+').write('execute store result score raycast_{0} ray_found run clone ~-15 ~-4 ~-15 ~15 ~15 ~15 ~-15 ~-4 ~-15 filtered {} force'.format(raycast_id, '#raycast:tohit_' + raycast_id))
