@@ -10,4 +10,3 @@ class Selector():
         for element in self.args:
             toreturn += element + '=' + str(self.args[element]) + ', '
         return toreturn[:-2] + ']'
-        

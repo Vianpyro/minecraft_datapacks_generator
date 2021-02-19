@@ -1,4 +1,4 @@
-from .File import File
+from .file import File
 
 class Workspace():
     def __init__(self, name: str) -> None:
