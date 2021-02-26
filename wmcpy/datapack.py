@@ -4,7 +4,10 @@ import os
 from .files import *
 
 class Datapack:
-    def __init__(self, title, path=None, author="Vianpyro's datapack generator", pack_meta=None, content=None, auto_compile=False, auto_replace=False):
+    def __init__(
+            self, title:str, path:str=None, author:str="Vianpyro's datapack generator",
+            pack_meta:dict=None, content:dict=None, auto_compile:bool=False, auto_replace:bool=False
+        ):
         """
         Initialisation of the Datapack.
         A datapack is a Minecraft folder in which a server administrator puts commands and rules
@@ -15,7 +18,6 @@ class Datapack:
         :param author:      The author of the datapack.
         :param pack_meta:   The content of the "pack.mcmeta".
         :param content:     The code the user writes in their datapack.
-        :return:            None
         """
         # Set the title to lower case
         self.title = title.lower()
@@ -61,7 +63,7 @@ class Datapack:
         if auto_compile:
             self.compile()
 
-    def compile(self):
+    def compile(self) -> None:
         '''
         This function compiles the parameters entered by the user to create a Minecraft Datapack.
         Probably the most important function of this program/library.
@@ -134,6 +136,17 @@ class Datapack:
                                 )
 
                         print(f'Successfuly generated {key} files.')
+                    elif key == 'tags':
+                        make_directory(directory_name)
+
+                        for e in self.content[key]:
+                            if e in ['blocks', 'entity_types', 'fluids', 'game_events', 'items']:
+                                make_directory(e, directory_name)
+                                for f in self.content[key][e]:
+                                    create_file(
+                                        f'{f}.json', f'{directory_name}/{e}/',
+                                        self.content[key][e][f]
+                                    )
                     elif self.content[key] is None:
                         print(f'No file was generated for "{key}".')
                     else:

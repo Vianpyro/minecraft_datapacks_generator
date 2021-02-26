@@ -1,7 +1,7 @@
 import os
 
 
-def make_directory(name, path=''):
+def make_directory(name, path:str='') -> None:
     '''
     This functions creates a directory
 
@@ -16,7 +16,7 @@ def make_directory(name, path=''):
     else:
         print(f'Successfuly created the directory "{name}".')
 
-def create_file(name, path='', content=''):
+def create_file(name, path:str='', content:(str, list, dict)='') -> None:
     '''
     This functions creates a file
 
@@ -39,7 +39,7 @@ def create_file(name, path='', content=''):
         print(f'Successfuly created the file "{name}".')
         f.close()
 
-def create_pack_meta(minecraft_version='1.6.1', description=None, author=None):
+def create_pack_meta(minecraft_version:str='1.6.1', description:str=None, author:str=None) -> str:
     '''
     This function helps with creating the string of a "pack.mcmeta" file ready to be written.
     
@@ -84,14 +84,14 @@ def create_pack_meta(minecraft_version='1.6.1', description=None, author=None):
     ).replace("'", '"')
 
 
-def import_from_file(path, extension='mcfunction'):
+def import_from_file(path, extension='mcfunction') -> (str, None):
     '''
     This functions help with importing files instead of writing them.
     The files has to exist on the user's computer to be imported.
 
     :param path:        The path where the resource has to be find.
     :param extension:   The extension of the resource [e.g. ".mcfunction", ".json", ".dat"].
-    :return:            None or OS-Error if the resource can not be found or read.
+    :return:            None or OS-Error if the resource can not be found or read, a string containing the content of the imported file otherwise.
     '''
     try:
         with open(f'{path}.{extension}', 'r') as f:

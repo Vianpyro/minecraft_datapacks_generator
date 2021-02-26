@@ -1,15 +1,15 @@
 class Selector:
-    def __init__(self, target_entity='@s',
-                 advancements=None,
-                 distance=None, dx=None, dy=None, dz=None,
-                 entity_type=None,
-                 gamemode=None, level=None, limit=None,
-                 name=None, nbt=None,
-                 scores=None, sort=None,
-                 tag=None, team=None,
-                 x=None, x_rotation=None,
-                 y=None, y_rotation=None,
-                 z=None
+    def __init__(self, target_entity:str='@s',
+                 advancements:str=None,
+                 distance:str=None, dx:str=None, dy:str=None, dz:str=None,
+                 entity_type:str=None,
+                 gamemode:str=None, level:str=None, limit:str=None,
+                 name:str=None, nbt:str=None,
+                 scores:str=None, sort:str=None,
+                 tag:str=None, team:str=None,
+                 x:str=None, x_rotation:str=None,
+                 y:str=None, y_rotation:str=None,
+                 z:str=None
     ):
         self.target_entity = target_entity if target_entity in ('@a', '@e', '@p', '@r', '@s') else '@s'
         args = [
@@ -27,7 +27,7 @@ class Selector:
         ]
         self.args = [element for element in args if element[1] is not None]
 
-    def __str__(self):
+    def __str__(self) -> str:
         r = self.target_entity + '['
         if len(self.args) == 0:
             r += ']'
